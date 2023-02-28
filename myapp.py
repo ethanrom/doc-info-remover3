@@ -6,16 +6,19 @@ import streamlit as st
 # load spaCy NLP model
 nlp = spacy.load("en_core_web_sm")
 
-# regex pattern to identify contract numbers and dates
-pattern = r"\b(?:\d[ -]*?){8,}\b|\b\d{1,2}[-/]\d{1,2}[-/]\d{2,4}\b"
+# regex patterns
+contact_pattern = r"\b(?:\d[ -]*?){8,}\b"
+date_pattern = r"\b\d{1,2}[-/]\d{1,2}[-/]\d{2,4}\b"
+email_pattern = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
 
-# function to replace personal information with a label
 def replace_personal_info(text):
     doc = nlp(text)
     for ent in doc.ents:
         if ent.label_ == "PERSON":
             text = text.replace(ent.text, "NAME")
-    text = re.sub(pattern, "CONTACT_OR_DATE", text)
+    text = re.sub(contact_pattern, "CONTACT NUMBER", text)
+    text = re.sub(date_pattern, "DATE", text)
+    text = re.sub(email_pattern, "EMAIL ADDRESS", text)
     return text
 
 # Streamlit app
